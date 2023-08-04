@@ -1,31 +1,39 @@
-#include "maingamescreen.h"
 #include <cmath>
+#include "maingamescreen.h"
+#include <QGraphicsLineItem>
+#include <QVBoxLayout>
 
 MainGameScreen::MainGameScreen(QWidget *parent) : QWidget(parent)
 {
-    for(int i = 0; i < 6; ++i) {
-        QPushButton *node = new QPushButton(QString::number(i + 1), this);
-        node->resize(50, 50); // set size of the buttons
+    scene = new QGraphicsScene(this);
+    view = new QGraphicsView(scene);
+    drawLineButton = new QPushButton("Draw line", this);
+
+    // Adds "nodes" to the screen in a circular configuration
+    for (int i = 0; i < 6; i++) {
+        QGraphicsEllipseItem *node = scene->addEllipse(0, 0, 20, 20);
+        node->setPos(100 * cos(i * M_PI / 3.0), 100 * sin(i * M_PI / 3.0));
         nodes.push_back(node);
     }
-    updateNodesPosition();
+
+    connect(drawLineButton, SIGNAL(clicked()), this, SLOT(drawLine()));
+
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(view);
+    layout->addWidget(drawLineButton);
+    setLayout(layout);
 }
 
-void MainGameScreen::resizeEvent(QResizeEvent *event)
-{
-    QWidget::resizeEvent(event);
-    updateNodesPosition();
-}
+MainGameScreen::~MainGameScreen() {}
+// Draws a line connecting the first and second node, will update this to draw a line between specified nodes
+void MainGameScreen::drawLine() {
+    if(nodes.size() >= 2) {
+        QPointF point1 = nodes[0]->pos();
+        QPointF point2 = nodes[1]->pos();
 
-void MainGameScreen::updateNodesPosition()
-{
-    int radius = std::min(width(), height()) / 2 - nodes[0]->width() / 2;
-    QPoint center = rect().center();
-    for(int i = 0; i < nodes.size(); ++i) {
-        double angle = i * 2 * M_PI / nodes.size();
-        int x = center.x() + radius * std::cos(angle) - nodes[i]->width() / 2;
-        int y = center.y() + radius * std::sin(angle) - nodes[i]->height() / 2;
-        nodes[i]->move(x, y);
+        scene->addLine(point1.x(), point1.y(), point2.x(), point2.y(), QPen(Qt::black));
     }
 }
+
 

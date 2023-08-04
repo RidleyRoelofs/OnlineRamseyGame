@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include <QVBoxLayout>
-#include <QLabel> // Include QLabel
+#include <QLabel> 
 #include "maingamescreen.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -51,7 +51,30 @@ void MainWindow::handleButton()
 // Create and return a new QWidget for the start screen
 QWidget *MainWindow::createStartScreen()
 {
-    return new QWidget(this);
+    QWidget *startScreenWidget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    firstNumberSpinBox = new QSpinBox(this);
+    firstNumberSpinBox->setRange(3, 6);
+
+    secondNumberSpinBox = new QSpinBox(this);
+    secondNumberSpinBox->setRange(3, 6);
+
+    QPushButton *confirmButton = new QPushButton("Confirm", this);
+    connect(confirmButton, SIGNAL(clicked()), this, SLOT(handleConfirmButton()));
+
+    layout->addWidget(firstNumberSpinBox);
+    layout->addWidget(secondNumberSpinBox);
+    layout->addWidget(confirmButton);
+
+    startScreenWidget->setLayout(layout);
+    return startScreenWidget;
+}
+
+void MainWindow::handleConfirmButton()
+{
+    G1_size = firstNumberSpinBox->value();
+    G2_size = secondNumberSpinBox->value();
 }
 
 // Create and return a new QWidget for the main screen

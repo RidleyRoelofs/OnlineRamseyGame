@@ -1,19 +1,26 @@
 #ifndef MAINGAMESCREEN_H
 #define MAINGAMESCREEN_H
 
-#include <QWidget>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QPushButton>
+#include <QWidget>
 
-class MainGameScreen : public QWidget
-{
+class MainGameScreen : public QWidget {
     Q_OBJECT
+
 public:
     explicit MainGameScreen(QWidget *parent = nullptr);
-    void resizeEvent(QResizeEvent *event) override;
-    void updateNodesPosition();
+    ~MainGameScreen();
+
+private slots:
+    void drawLine();
 
 private:
-    std::vector<QPushButton*> nodes;
+    QGraphicsScene *scene;
+    QGraphicsView *view;
+    QPushButton *drawLineButton;
+    std::vector<QGraphicsEllipseItem*> nodes;
 };
 
 #endif // MAINGAMESCREEN_H

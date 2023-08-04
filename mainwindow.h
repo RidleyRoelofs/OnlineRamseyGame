@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QLabel>
+#include <QSpinBox>
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -15,10 +16,15 @@ public:
 
 public slots:
     void handleButton();
+    void handleConfirmButton();
 
 private:
+    int G1_size;
+    int G2_size;
     QStackedWidget *stackedWidget;
     QPushButton *nextButton;
+    QSpinBox *firstNumberSpinBox;  
+    QSpinBox *secondNumberSpinBox; 
     QLabel *screenLabel;
     QWidget *createStartScreen();
     QWidget *createMainScreen();
