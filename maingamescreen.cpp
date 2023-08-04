@@ -7,7 +7,14 @@ MainGameScreen::MainGameScreen(QWidget *parent) : QWidget(parent)
 {
     scene = new QGraphicsScene(this);
     view = new QGraphicsView(scene);
-    drawLineButton = new QPushButton("Draw line", this);
+    drawRedLineButton = new QPushButton("Draw Red line", this);
+    drawBlueLineButton = new QPushButton("Draw Blue line", this);
+
+    firstNodeSpinBox = new QSpinBox(this);
+    firstNodeSpinBox->setRange(1, 6);
+
+    secondNodeSpinBox = new QSpinBox(this);
+    secondNodeSpinBox->setRange(1, 6);
 
     // Adds "nodes" to the screen in a circular configuration
     for (int i = 0; i < 6; i++) {
@@ -15,25 +22,37 @@ MainGameScreen::MainGameScreen(QWidget *parent) : QWidget(parent)
         node->setPos(100 * cos(i * M_PI / 3.0), 100 * sin(i * M_PI / 3.0));
         nodes.push_back(node);
     }
+    //connects the draw line button
+    connect(drawRedLineButton, SIGNAL(clicked()), this, SLOT(drawRedLine()));
+    connect(drawBlueLineButton, SIGNAL(clicked()), this, SLOT(drawBlueLine()));
 
-    connect(drawLineButton, SIGNAL(clicked()), this, SLOT(drawLine()));
-
+  
 
     QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(firstNodeSpinBox);
+    layout->addWidget(secondNodeSpinBox);
     layout->addWidget(view);
-    layout->addWidget(drawLineButton);
+    layout->addWidget(drawRedLineButton);
+    layout->addWidget(drawBlueLineButton);
     setLayout(layout);
 }
 
 MainGameScreen::~MainGameScreen() {}
 // Draws a line connecting the first and second node, will update this to draw a line between specified nodes
-void MainGameScreen::drawLine() {
-    if(nodes.size() >= 2) {
-        QPointF point1 = nodes[0]->pos();
-        QPointF point2 = nodes[1]->pos();
+void MainGameScreen::drawBlueLine() {
 
-        scene->addLine(point1.x(), point1.y(), point2.x(), point2.y(), QPen(Qt::black));
-    }
+    QPointF point1 = nodes[firstNodeSpinBox->value()-1]->pos();
+    QPointF point2 = nodes[secondNodeSpinBox->value()-1]->pos();
+
+    scene->addLine(point1.x(), point1.y(), point2.x(), point2.y(), QPen(Qt::blue));
+
+}
+
+void MainGameScreen::drawRedLine() {
+    QPointF point1 = nodes[firstNodeSpinBox->value()-1]->pos();
+    QPointF point2 = nodes[secondNodeSpinBox->value()-1]->pos();
+
+    scene->addLine(point1.x(), point1.y(), point2.x(), point2.y(), QPen(Qt::red));
 }
 
 

@@ -5,7 +5,7 @@
 #include <QGraphicsView>
 #include <QPushButton>
 #include <QWidget>
-
+#include <QSpinBox>
 class MainGameScreen : public QWidget {
     Q_OBJECT
 
@@ -14,12 +14,16 @@ public:
     ~MainGameScreen();
 
 private slots:
-    void drawLine();
+    void drawRedLine();
+    void drawBlueLine();
 
 private:
     QGraphicsScene *scene;
     QGraphicsView *view;
-    QPushButton *drawLineButton;
+    QPushButton *drawRedLineButton;
+    QPushButton *drawBlueLineButton;
+    QSpinBox *firstNodeSpinBox;
+    QSpinBox *secondNodeSpinBox;
     std::vector<QGraphicsEllipseItem*> nodes;
 };
 
