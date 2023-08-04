@@ -48,7 +48,7 @@ void MainGameScreen::drawBlueLine() {
     QPointF point1 = nodes[firstNodeSpinBox->value()-1]->pos();
     QPointF point2 = nodes[secondNodeSpinBox->value()-1]->pos();
 
-    scene->addLine(point1.x(), point1.y(), point2.x(), point2.y(), QPen(Qt::blue));
+    scene->addLine(point1.x()+10, point1.y()+10, point2.x()+10, point2.y()+10, QPen(Qt::blue));
 
 }
 
@@ -56,7 +56,7 @@ void MainGameScreen::drawRedLine() {
     QPointF point1 = nodes[firstNodeSpinBox->value()-1]->pos();
     QPointF point2 = nodes[secondNodeSpinBox->value()-1]->pos();
 
-    scene->addLine(point1.x(), point1.y(), point2.x(), point2.y(), QPen(Qt::red));
+    scene->addLine(point1.x()+10, point1.y()+10, point2.x()+10, point2.y()+10, QPen(Qt::red));
 }
 
 

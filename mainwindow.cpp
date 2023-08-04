@@ -2,6 +2,7 @@
 #include <QVBoxLayout>
 #include <QLabel> 
 #include "maingamescreen.h"
+#include <QLabel>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent),
@@ -51,6 +52,9 @@ void MainWindow::handleButton()
 // Create and return a new QWidget for the start screen
 QWidget *MainWindow::createStartScreen()
 {
+    QLabel *firstNumberLabel = new QLabel("Red Path Size For Painter To Avoid:", this);
+    QLabel *secondNumberLabel = new QLabel("Blue Cycle Size For Painter To Avoid:", this);
+
     QWidget *startScreenWidget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout;
 
@@ -64,9 +68,17 @@ QWidget *MainWindow::createStartScreen()
 
     QPushButton *confirmButton = new QPushButton("Confirm", this);
     connect(confirmButton, SIGNAL(clicked()), this, SLOT(handleConfirmButton()));
+    
+    QHBoxLayout *firstNumberLayout = new QHBoxLayout;
+    firstNumberLayout->addWidget(firstNumberLabel);
+    firstNumberLayout->addWidget(firstNumberSpinBox);
 
-    layout->addWidget(firstNumberSpinBox);
-    layout->addWidget(secondNumberSpinBox);
+    QHBoxLayout *secondNumberLayout = new QHBoxLayout;
+    secondNumberLayout->addWidget(secondNumberLabel);
+    secondNumberLayout->addWidget(secondNumberSpinBox);
+
+    layout->addLayout(firstNumberLayout);
+    layout->addLayout(secondNumberLayout);
     layout->addWidget(confirmButton);
 
     startScreenWidget->setLayout(layout);
