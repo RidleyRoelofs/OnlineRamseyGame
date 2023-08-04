@@ -15,6 +15,10 @@ MainGameScreen::MainGameScreen(QWidget *parent) : QWidget(parent)
 
     secondNodeSpinBox = new QSpinBox(this);
     secondNodeSpinBox->setRange(1, 6);
+    firstNodeSpinBox->setFixedSize(100,50);
+    secondNodeSpinBox->setFixedSize(100,50);
+    drawRedLineButton->setFixedSize(100,50);
+    drawBlueLineButton->setFixedSize(100,50);
 
     // Adds "nodes" to the screen in a circular configuration
     for (int i = 0; i < 6; i++) {
@@ -29,9 +33,9 @@ MainGameScreen::MainGameScreen(QWidget *parent) : QWidget(parent)
   
 
     QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(view);
     layout->addWidget(firstNodeSpinBox);
     layout->addWidget(secondNodeSpinBox);
-    layout->addWidget(view);
     layout->addWidget(drawRedLineButton);
     layout->addWidget(drawBlueLineButton);
     setLayout(layout);

@@ -59,6 +59,8 @@ QWidget *MainWindow::createStartScreen()
 
     secondNumberSpinBox = new QSpinBox(this);
     secondNumberSpinBox->setRange(3, 6);
+    firstNumberSpinBox->setFixedSize(100,50);
+    secondNumberSpinBox->setFixedSize(100,50);
 
     QPushButton *confirmButton = new QPushButton("Confirm", this);
     connect(confirmButton, SIGNAL(clicked()), this, SLOT(handleConfirmButton()));
