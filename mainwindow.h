@@ -6,6 +6,8 @@
 #include <QStackedWidget>
 #include <QLabel>
 #include <QSpinBox>
+#include "game_state.hpp"
+#include "maingamescreen.h"
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -17,10 +19,15 @@ public:
 public slots:
     void handleButton();
     void handleConfirmButton();
+    void handleEndGame(); 
+    void displayEndGameInfo(const QString& path, int turns);
+    void handleResetButton();
 
 private:
+    Game_State game;
     int G1_size;
     int G2_size;
+    MainGameScreen* mainScreen;
     QStackedWidget *stackedWidget;
     QPushButton *nextButton;
     QSpinBox *firstNumberSpinBox;  
@@ -29,6 +36,8 @@ private:
     QWidget *createStartScreen();
     QWidget *createMainScreen();
     QWidget *createEndScreen();
+    QLabel *pathLabel;
+    QLabel *turnsLabel;
 };
 
 #endif // MAINWINDOW_H
