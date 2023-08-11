@@ -19,6 +19,8 @@ file(GLOB HEADERS src/*.h)
 list(APPEND SOURCES main.cpp mainwindow.cpp maingamescreen.cpp)
 
 add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
-
 target_link_libraries(${PROJECT_NAME} Qt4::QtGui Qt4::QtCore ${Boost_LIBRARIES})
 
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
+install(DIRECTORY Images DESTINATION share)
+install(PROGRAMS demo.sh DESTINATION bin RENAME demo)

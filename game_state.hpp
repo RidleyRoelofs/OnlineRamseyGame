@@ -75,7 +75,7 @@ public:
 			endGameString = "Cycle Found Along Nodes: ";
 			for(const auto& node : path)
 			    endGameString += std::to_string(node+1) + " -> ";
-			endGameString +=std::to_string(path[0]);  
+			endGameString +=std::to_string(path[0]+1);  
             	 }	
             }
         } else if (path.size() < cycle_length) {
