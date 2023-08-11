@@ -120,6 +120,7 @@ public:
 	B_ = Graph(6);
 	R_ = Graph(6);
 	Built_Edges_ = Graph(6);
+        endGameString = "";
     }
     
 private:
@@ -131,7 +132,7 @@ private:
     Graph R_{6};
     Graph B_{6};
     Graph Built_Edges_{6};
-    std::string endGameString; // string that holds which path or cycle caused a loss
+    std::string endGameString = ""; // string that holds which path or cycle caused a loss
 
 };
 #endif // GAME_STATE_H

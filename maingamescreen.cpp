@@ -114,9 +114,8 @@ void MainGameScreen::drawBlueLine() {
 void MainGameScreen::checkEndCondition(){
     bool isPath = game->DFS_Check_Red();
     bool isCycle = game->DFS_Check_Blue();
-    //std::cout << "Path is " << isPath <<"\n"; //debug
-    //std::cout <<"Cycle is "<< isCycle <<"\n"; //debug
-    if(isPath || isCycle) {
+    bool isTurnLimit = game->getTurnNumber() == 16;
+    if(isPath || isCycle || isTurnLimit) {
         emit gameEnded();
     }
 }
@@ -128,9 +127,10 @@ void MainGameScreen::endTurnHandler(){
             firstNodeSpinBox->setEnabled(true);
             secondNodeSpinBox->setEnabled(true);
         edge_drawn = false;
-        checkEndCondition();
+        
         game->swapTurn();
         game->incrementTurn();
+        checkEndCondition();
         playerImage->setPixmap(builderPixel);}
     } else 
     if(game->isBuildersTurn()){

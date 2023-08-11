@@ -93,7 +93,7 @@ QWidget *MainWindow::createStartScreen()
     QWidget *startScreenWidget = new QWidget(this);
 
     firstNumberSpinBox = new QSpinBox(this);
-    firstNumberSpinBox->setRange(3, 5); //RED PATH
+    firstNumberSpinBox->setRange(3, 6); //RED PATH
 
     secondNumberSpinBox = new QSpinBox(this);
     secondNumberSpinBox->setRange(3, 6); //BLUE CYCLE
@@ -132,7 +132,11 @@ void MainWindow::handleConfirmButton()
 /*Sets labels displayed on the end game screen once a path or cycle has been found*/
 void MainWindow::handleEndGame() {
     pathLabel->setText(QString::fromStdString(game.getEndGameString()));
-    turnsLabel->setText("Number of Turns: "+ QString::number(game.getTurnNumber()));
+    turnsLabel->setText("Number of Turns: "+ QString::number(game.getTurnNumber()-1));
+    if(game.getTurnNumber() == 16 && game.getEndGameString() == ""){
+        
+    	turnsLabel->setText("A tie! All edges have been colored in 15 turns ");
+    }
     stackedWidget->setCurrentIndex(2);  
 }
 
@@ -164,6 +168,9 @@ QWidget* MainWindow::createEndScreen() {
 void MainWindow::displayEndGameInfo(const QString& path, int turns) {
     pathLabel->setText("Path: " + path);
     turnsLabel->setText("Turns: " + QString::number(turns));
+    if(turns == 15){
+    	turnsLabel->setText("A tie! All edges have been colored in 15 turns ");
+    }
 }
 /*Function to reset the game after user clicks the reset button*/
 void MainWindow::handleResetButton() {
