@@ -5,24 +5,22 @@
 #include <algorithm>
 #include<iostream>
 #include <QPainter>
-
+#include "graphics_view.cpp"
 
 MainGameScreen::MainGameScreen(Game_State* game,QWidget *parent) : QWidget(parent), game(game)
 {
     scene = new QGraphicsScene(this);
-    view = new QGraphicsView(scene);
-    int viewWidth = view->viewport()->width();
-    int viewHeight = view->viewport()->height();
-    
     builderImage.load("Images/Builder.png");
     painterImage.load("Images/Painter.png");
     builderPixel = builderImage.scaled(100, 100, Qt::KeepAspectRatio);
     painterPixel = painterImage.scaled(100, 100, Qt::KeepAspectRatio);
     playerImage= new QGraphicsPixmapItem(builderPixel);
     scene->addItem(playerImage);
-    QPointF topRightScene = view->mapToScene(viewWidth -builderPixel.width(), 0);
-    playerImage->setPos(topRightScene);
+    view = new CustomView(scene, playerImage,nodes, this); // playerImage is your QGraphicsPixmapItem
+    //QPointF topRightScene = view->mapToScene(viewWidth -builderPixel.width(), 0);
+    //playerImage->setPos(topRightScene);
     view->setRenderHint(QPainter::Antialiasing);
+    scene->setSceneRect(view->viewport()->rect());
     drawRedLineButton = new QPushButton("Draw Red line", this);
     drawBlueLineButton = new QPushButton("Draw Blue line", this);
     checkEndConditionButton = new QPushButton("Check Path and Cycle", this);
@@ -40,20 +38,26 @@ MainGameScreen::MainGameScreen(Game_State* game,QWidget *parent) : QWidget(paren
     secondNodeSpinBox->setFixedSize(100,50);
     drawRedLineButton->setFixedSize(100,50);
     drawBlueLineButton->setFixedSize(100,50);
+    checkEndConditionButton->hide();
     checkEndConditionButton->setFixedSize(100,100);
     
+
     const int node_radius = 120;
     const int label_offset = 20;
+    QPointF center = scene->sceneRect().center();
     for (int i = 0; i < 6; i++) {
-        QGraphicsEllipseItem *node = scene->addEllipse(0, 0, 20, 20);
-        node->setPos(node_radius * cos(i * M_PI / 3.0), node_radius * sin(i * M_PI / 3.0));
+        QGraphicsEllipseItem* node = scene->addEllipse(0, 0, 20, 20);
+        double x = center.x() + node_radius * cos(i * M_PI / 3.0);
+        double y = center.y() + node_radius * sin(i * M_PI / 3.0);
+        node->setPos(x, y);
         QBrush brush(Qt::black);
         node->setBrush(brush);
         nodes.push_back(node);
-        double labelX = (node_radius + label_offset)*cos(i * M_PI / 3.0);
-	double labelY = (node_radius + label_offset) * sin(i * M_PI / 3.0);
-	QGraphicsTextItem *label = scene->addText(QString::number(i + 1));
-	label->setPos(labelX, labelY);
+        
+        double labelX = x + label_offset * cos(i * M_PI / 3.0);
+        double labelY = y + label_offset * sin(i * M_PI / 3.0);
+        QGraphicsTextItem* label = scene->addText(QString::number(i + 1));
+        label->setPos(labelX, labelY);
     }
 
     connect(drawRedLineButton, SIGNAL(clicked()), this, SLOT(drawRedLine()));
@@ -90,51 +94,63 @@ void MainGameScreen::setButtonColor(QPushButton* button, const QColor& color)
 }
 
 MainGameScreen::~MainGameScreen() {}
-void MainGameScreen::drawBlueLine() {
-    QPointF point1 = nodes[firstNodeSpinBox->value()-1]->pos();
-    QPointF point2 = nodes[secondNodeSpinBox->value()-1]->pos();
-    game->addBlueEdge(std::min(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1),std::max(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1));
 
-    QPen pen(Qt::blue);
-    pen.setWidth(6); 
-    QGraphicsLineItem* line = scene->addLine(point1.x()+10, point1.y()+10, point2.x()+10, point2.y()+10, pen);
-    lines.push_back(line);
+void MainGameScreen::drawBlueLine() {
+    if (game->isPaintersTurn()) {
+        QPointF point1 = nodes[firstNodeSpinBox->value() - 1]->pos();
+        QPointF point2 = nodes[secondNodeSpinBox->value() - 1]->pos();
+        game->addBlueEdge(std::min(firstNodeSpinBox->value() - 1, secondNodeSpinBox->value() - 1),
+                          std::max(firstNodeSpinBox->value() - 1, secondNodeSpinBox->value() - 1));
+
+        QPen pen(Qt::blue);
+        pen.setWidth(6);
+        QGraphicsLineItem* line = scene->addLine(point1.x() + 10, point1.y() + 10, point2.x() + 10, point2.y() + 10, pen);
+        lines.push_back(line);
+        edge_drawn = true;
+    }
 }
 
 void MainGameScreen::checkEndCondition(){
-	bool isPath = game->DFS_Check_Red();
-	bool isCycle = game->DFS_Check_Blue();
-	std::cout << "Path is " << isPath <<"\n"; //debug
-	std::cout <<"Cycle is "<<isCycle<<"\n"; //debug
-	if(isPath || isCycle) {
-            emit gameEnded();
-        }
+    bool isPath = game->DFS_Check_Red();
+    bool isCycle = game->DFS_Check_Blue();
+    //std::cout << "Path is " << isPath <<"\n"; //debug
+    //std::cout <<"Cycle is "<< isCycle <<"\n"; //debug
+    if(isPath || isCycle) {
+        emit gameEnded();
+    }
 }
 void MainGameScreen::endTurnHandler(){
     if(game->isPaintersTurn()){
+        if(edge_drawn){
+        edge_drawn = false;
         checkEndCondition();
         game->swapTurn();
         game->incrementTurn();
-        playerImage->setPixmap(builderPixel);
+        playerImage->setPixmap(builderPixel);}
     } else 
     if(game->isBuildersTurn()){
-        
-        game->swapTurn();
-        playerImage->setPixmap(painterPixel);
+        //Only Swaps to painters turn if the edge is not build and if the first and second spin box are not equal
+        if(!game->isEdgeBuilt(std::min(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1),std::max(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1)) && firstNodeSpinBox->value() != secondNodeSpinBox->value()){
+            game->swapTurn();
+            playerImage->setPixmap(painterPixel);
+        }
     }
     
 }
 
 void MainGameScreen::drawRedLine() {
-    QPointF point1 = nodes[firstNodeSpinBox->value()-1]->pos();
-    QPointF point2 = nodes[secondNodeSpinBox->value()-1]->pos();
-    game->addRedEdge(std::min(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1),std::max(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1));
+    if (game->isPaintersTurn()) {
+        QPointF point1 = nodes[firstNodeSpinBox->value() - 1]->pos();
+        QPointF point2 = nodes[secondNodeSpinBox->value() - 1]->pos();
+        game->addRedEdge(std::min(firstNodeSpinBox->value() - 1, secondNodeSpinBox->value() - 1),
+                         std::max(firstNodeSpinBox->value() - 1, secondNodeSpinBox->value() - 1));
 
-    QPen pen(Qt::red);
-    pen.setWidth(6);
-
-    QGraphicsLineItem* line = scene->addLine(point1.x()+10, point1.y()+10, point2.x()+10, point2.y()+10, pen);
-    lines.push_back(line);
+        QPen pen(Qt::red);
+        pen.setWidth(6);
+        QGraphicsLineItem* line = scene->addLine(point1.x() + 10, point1.y() + 10, point2.x() + 10, point2.y() + 10, pen);
+        lines.push_back(line);
+        edge_drawn = true;
+    }
 }
 
 void MainGameScreen::clearLines() {

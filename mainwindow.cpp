@@ -15,7 +15,8 @@ MainWindow::MainWindow(QWidget *parent)
     stackedWidget->addWidget(createStartScreen());
     stackedWidget->addWidget(createMainScreen());
     stackedWidget->addWidget(createEndScreen());
-
+    nextButton->hide();
+    screenLabel->hide();
     connect(nextButton, SIGNAL(clicked()), this, SLOT(handleButton()));
     
     QVBoxLayout *layout = new QVBoxLayout;
@@ -76,10 +77,13 @@ QWidget *MainWindow::createStartScreen()
 
     // Create a horizontal layout for the header
     QHBoxLayout *headerLayout = new QHBoxLayout;
+    headerLayout->addStretch();
     headerLayout->addWidget(leftImageLabel);
+    headerLayout->addStretch();
     headerLayout->addWidget(headerLabel);
+    headerLayout->addStretch();
     headerLayout->addWidget(rightImageLabel);
-
+    headerLayout->addStretch();
     // Add header layout to main layout
     layout->addLayout(headerLayout);
 
@@ -122,6 +126,8 @@ void MainWindow::handleConfirmButton()
     G2_size = secondNumberSpinBox->value();
     game.setG1Size(G1_size);
     game.setG2Size(G2_size);
+    int currentIndex = stackedWidget->currentIndex();
+    stackedWidget->setCurrentIndex(currentIndex + 1);
 }
 /*Sets labels displayed on the end game screen once a path or cycle has been found*/
 void MainWindow::handleEndGame() {

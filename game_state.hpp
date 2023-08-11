@@ -18,6 +18,10 @@ public:
         boost::add_edge(nodeA,nodeB,R_);
         boost::add_edge(nodeA,nodeB,Built_Edges_);
     }
+    bool isEdgeBuilt(node_type nodeA, node_type nodeB){
+    	std::pair<boost::adjacency_matrix<boost::undirectedS>::edge_descriptor, bool> e = boost::edge(nodeA, nodeB, Built_Edges_);
+        return e.second;	 
+    }
     /*Returns true on painters turn, false otherwise*/
     bool isPaintersTurn() {return paintersTurn_;}
     /*Returns true on builders turn, false otherwise*/
@@ -34,6 +38,7 @@ public:
 	      endGameString = "Path Found Along Nodes: ";
 	      for (const auto& node : path)
  	          endGameString += std::to_string(node + 1) + " -> ";
+              endGameString += " End";
         } else {
             auto neighbors = boost::adjacent_vertices(start, R_);
             for (auto it = neighbors.first; it != neighbors.second; ++it) {
@@ -69,7 +74,7 @@ public:
            	        cycle_found = true;
 			endGameString = "Cycle Found Along Nodes: ";
 			for(const auto& node : path)
-			    endGameString += std::to_string(node) + " -> ";
+			    endGameString += std::to_string(node+1) + " -> ";
 			endGameString +=std::to_string(path[0]);  
             	 }	
             }

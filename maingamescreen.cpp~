@@ -1,0 +1,80 @@
+#include <cmath>
+#include "maingamescreen.h"
+#include <QGraphicsLineItem>
+#include <QVBoxLayout>
+//#include "game_state.hpp"
+#include <algorithm>
+#include<iostream>
+
+
+MainGameScreen::MainGameScreen(Game_State* game,QWidget *parent) : QWidget(parent),game(game)
+{
+    scene = new QGraphicsScene(this);
+    view = new QGraphicsView(scene);
+    drawRedLineButton = new QPushButton("Draw Red line", this);
+    drawBlueLineButton = new QPushButton("Draw Blue line", this);
+    checkEndConditionButton = new QPushButton("Check Path and Cycle", this);
+    firstNodeSpinBox = new QSpinBox(this);
+    firstNodeSpinBox->setRange(1, 6);
+
+    secondNodeSpinBox = new QSpinBox(this);
+    secondNodeSpinBox->setRange(1, 6);
+    firstNodeSpinBox->setFixedSize(100,50);
+    secondNodeSpinBox->setFixedSize(100,50);
+    drawRedLineButton->setFixedSize(100,50);
+    drawBlueLineButton->setFixedSize(100,50);
+    checkEndConditionButton->setFixedSize(100,100);
+
+    // Adds "nodes" to the screen in a circular configuration
+    for (int i = 0; i < 6; i++) {
+        QGraphicsEllipseItem *node = scene->addEllipse(0, 0, 20, 20);
+        node->setPos(100 * cos(i * M_PI / 3.0), 100 * sin(i * M_PI / 3.0));
+        nodes.push_back(node);
+    }
+    //connects the draw line button
+    connect(drawRedLineButton, SIGNAL(clicked()), this, SLOT(drawRedLine()));
+    connect(drawBlueLineButton, SIGNAL(clicked()), this, SLOT(drawBlueLine()));
+    connect(checkEndConditionButton, SIGNAL(clicked()), this, SLOT(checkEndCondition()));
+  
+
+    QVBoxLayout *layout = new QVBoxLayout;
+    layout->addWidget(view);
+    layout->addWidget(firstNodeSpinBox);
+    layout->addWidget(secondNodeSpinBox);
+    layout->addWidget(drawRedLineButton);
+    layout->addWidget(drawBlueLineButton);
+    layout->addWidget(checkEndConditionButton);
+    setLayout(layout);
+}
+
+MainGameScreen::~MainGameScreen() {}
+// Draws a line connecting the first and second node, will update this to draw a line between specified nodes
+void MainGameScreen::drawBlueLine() {
+
+    QPointF point1 = nodes[firstNodeSpinBox->value()-1]->pos();
+    QPointF point2 = nodes[secondNodeSpinBox->value()-1]->pos();
+    game->addBlueEdge(std::min(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1),std::max(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1));
+
+    scene->addLine(point1.x()+10, point1.y()+10, point2.x()+10, point2.y()+10, QPen(Qt::blue));
+
+}
+
+void MainGameScreen::checkEndCondition(){
+	bool is_path = game->DFS_Check_Red();
+	bool is_cycle = game->DFS_Check_Blue();
+	std::cout << "Path is " << is_path <<"\n";
+	std::cout <<"Cycle is "<<is_cycle<<"\n";
+	if(is_path || is_cycle) {
+        emit gameEnded();
+   }
+}
+
+void MainGameScreen::drawRedLine() {
+    QPointF point1 = nodes[firstNodeSpinBox->value()-1]->pos();
+    QPointF point2 = nodes[secondNodeSpinBox->value()-1]->pos();
+	 game->addRedEdge(std::min(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1),std::max(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1));
+
+    scene->addLine(point1.x()+10, point1.y()+10, point2.x()+10, point2.y()+10, QPen(Qt::red));
+}
+
+
