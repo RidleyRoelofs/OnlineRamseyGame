@@ -16,9 +16,7 @@ MainGameScreen::MainGameScreen(Game_State* game,QWidget *parent) : QWidget(paren
     painterPixel = painterImage.scaled(100, 100, Qt::KeepAspectRatio);
     playerImage= new QGraphicsPixmapItem(builderPixel);
     scene->addItem(playerImage);
-    view = new CustomView(scene, playerImage,nodes, this); // playerImage is your QGraphicsPixmapItem
-    //QPointF topRightScene = view->mapToScene(viewWidth -builderPixel.width(), 0);
-    //playerImage->setPos(topRightScene);
+    view = new CustomView(scene, playerImage,nodes, this);
     view->setRenderHint(QPainter::Antialiasing);
     scene->setSceneRect(view->viewport()->rect());
     drawRedLineButton = new QPushButton("Draw Red line", this);
@@ -83,8 +81,8 @@ MainGameScreen::MainGameScreen(Game_State* game,QWidget *parent) : QWidget(paren
 
     mainLayout->addLayout(middleLayout);
     mainLayout->addWidget(checkEndConditionButton);
-                   drawRedLineButton->setEnabled(false);
-        drawBlueLineButton->setEnabled(false);
+    drawRedLineButton->setEnabled(false);
+    drawBlueLineButton->setEnabled(false);
     setLayout(mainLayout);
 }
 void MainGameScreen::setButtonColor(QPushButton* button, const QColor& color)
@@ -96,6 +94,48 @@ void MainGameScreen::setButtonColor(QPushButton* button, const QColor& color)
 
 MainGameScreen::~MainGameScreen() {}
 
+
+
+void MainGameScreen::checkEndCondition(){
+    bool isPath = game->DFS_Check_Red();
+    bool isCycle = game->DFS_Check_Blue();
+    bool isTurnLimit = game->getTurnNumber() == 16;
+    if(isPath || isCycle || isTurnLimit) {
+        emit gameEnded();
+    }
+}
+/*Handles the logic necessary for swapping turns, different logic is executed if end of painters or builders turn*/
+void MainGameScreen::endTurnHandler(){
+    if(game->isPaintersTurn()){
+        //Can only end then turn if an edge has been painted
+        if(edge_drawn){
+            // Disables the draw line buttons and enables the spin boxes for the upcoming builder's turn
+            drawRedLineButton->setEnabled(false);
+            drawBlueLineButton->setEnabled(false);
+            firstNodeSpinBox->setEnabled(true);
+            secondNodeSpinBox->setEnabled(true);
+            edge_drawn = false;
+        
+            game->swapTurn();
+            game->incrementTurn();
+            checkEndCondition();
+            playerImage->setPixmap(builderPixel);
+        }
+    } else if(game->isBuildersTurn()){
+        //Only Swaps to painters turn if the edge is not build and if the first and second spin box are not equal
+        if(!game->isEdgeBuilt(std::min(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1),std::max(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1)) && firstNodeSpinBox->value() != secondNodeSpinBox->value()){
+            // Disables the spin boxes and enables the draw line buttons for the upcoming painter's turn
+            firstNodeSpinBox->setEnabled(false);
+            secondNodeSpinBox->setEnabled(false);
+            drawRedLineButton->setEnabled(true);
+            drawBlueLineButton->setEnabled(true);
+            game->swapTurn();
+            playerImage->setPixmap(painterPixel);
+        }
+    }
+    
+}
+/*Draws a blue line between the two selected nodes only if it is the painters turn*/
 void MainGameScreen::drawBlueLine() {
     if (game->isPaintersTurn()) {
         QPointF point1 = nodes[firstNodeSpinBox->value() - 1]->pos();
@@ -110,43 +150,7 @@ void MainGameScreen::drawBlueLine() {
         edge_drawn = true;
     }
 }
-
-void MainGameScreen::checkEndCondition(){
-    bool isPath = game->DFS_Check_Red();
-    bool isCycle = game->DFS_Check_Blue();
-    bool isTurnLimit = game->getTurnNumber() == 16;
-    if(isPath || isCycle || isTurnLimit) {
-        emit gameEnded();
-    }
-}
-void MainGameScreen::endTurnHandler(){
-    if(game->isPaintersTurn()){
-        if(edge_drawn){
-               drawRedLineButton->setEnabled(false);
-        drawBlueLineButton->setEnabled(false);
-            firstNodeSpinBox->setEnabled(true);
-            secondNodeSpinBox->setEnabled(true);
-        edge_drawn = false;
-        
-        game->swapTurn();
-        game->incrementTurn();
-        checkEndCondition();
-        playerImage->setPixmap(builderPixel);}
-    } else 
-    if(game->isBuildersTurn()){
-        //Only Swaps to painters turn if the edge is not build and if the first and second spin box are not equal
-        if(!game->isEdgeBuilt(std::min(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1),std::max(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1)) && firstNodeSpinBox->value() != secondNodeSpinBox->value()){
-                    firstNodeSpinBox->setEnabled(false);
-            secondNodeSpinBox->setEnabled(false);
-        drawRedLineButton->setEnabled(true);
-        drawBlueLineButton->setEnabled(true);
-            game->swapTurn();
-            playerImage->setPixmap(painterPixel);
-        }
-    }
-    
-}
-
+/*Draws a red line between the two selected nodes only if it is the painters turn*/
 void MainGameScreen::drawRedLine() {
     if (game->isPaintersTurn()) {
         QPointF point1 = nodes[firstNodeSpinBox->value() - 1]->pos();
@@ -161,7 +165,7 @@ void MainGameScreen::drawRedLine() {
         edge_drawn = true;
     }
 }
-
+/*Clears line on reset of game*/
 void MainGameScreen::clearLines() {
     for (auto line : lines) {
         scene->removeItem(line);

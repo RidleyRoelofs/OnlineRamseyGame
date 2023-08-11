@@ -8,6 +8,7 @@
 #include <QSpinBox>
 #include "game_state.hpp"
 #include "maingamescreen.h"
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
@@ -20,7 +21,6 @@ public slots:
     void handleButton();
     void handleConfirmButton();
     void handleEndGame(); 
-    void displayEndGameInfo(const QString& path, int turns);
     void handleResetButton();
 
 private:

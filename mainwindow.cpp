@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
 MainWindow::~MainWindow()
 {
 }
-/*Function to handle the clicking of Next button, will get rid of*/
 void MainWindow::handleButton()
 {
     int currentIndex = stackedWidget->currentIndex();
@@ -165,13 +164,7 @@ QWidget* MainWindow::createEndScreen() {
     return endScreenWidget;
 }
 
-void MainWindow::displayEndGameInfo(const QString& path, int turns) {
-    pathLabel->setText("Path: " + path);
-    turnsLabel->setText("Turns: " + QString::number(turns));
-    if(turns == 15){
-    	turnsLabel->setText("A tie! All edges have been colored in 15 turns ");
-    }
-}
+
 /*Function to reset the game after user clicks the reset button*/
 void MainWindow::handleResetButton() {
     game.resetGameState();

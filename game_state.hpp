@@ -4,7 +4,9 @@
 #include <vector>
 #include <iostream>
 #include <string>
+
 typedef boost::adjacency_matrix<boost::undirectedS> Graph;
+
 class Game_State {
 public:
     using node_type = int;
@@ -107,7 +109,7 @@ public:
     /*Returns a string containing either the path or cycle that caused the game to end*/
     std::string getEndGameString() { return endGameString;}
     /*Sets the number of nodes the path of edges must contain to end the game*/
-    void setG1Size(int size){path_length = size + 1;} 
+    void setG1Size(int size){path_length = size + 1;} // +1 since considers number of nodes in path
     /*Sets the number of edges the cycle must contain to end the game*/
     void setG2Size(int size){cycle_length = size;}
     /*Resets the state of the game to the intitial values*/

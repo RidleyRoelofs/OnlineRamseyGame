@@ -7,6 +7,7 @@
 #include <QWidget>
 #include <QSpinBox>
 #include "game_state.hpp"
+
 class MainGameScreen : public QWidget {
     Q_OBJECT
 
@@ -23,8 +24,6 @@ private slots:
     void checkEndCondition();
     void endTurnHandler();
     void setButtonColor(QPushButton*,const QColor&);
-
-    
 
 private:
     bool edge_drawn = false;

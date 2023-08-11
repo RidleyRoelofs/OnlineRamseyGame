@@ -4,6 +4,7 @@ public:
         : QGraphicsView(scene, parent), playerImage_(playerImage), nodes_(nodes) {}
 
 protected:
+    //Overrides current resize function to keep nodes in the center and image in the top right
     void resizeEvent(QResizeEvent* event) override {
         QGraphicsView::resizeEvent(event);
         int viewWidth = viewport()->width();
