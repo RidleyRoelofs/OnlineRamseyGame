@@ -83,7 +83,8 @@ MainGameScreen::MainGameScreen(Game_State* game,QWidget *parent) : QWidget(paren
 
     mainLayout->addLayout(middleLayout);
     mainLayout->addWidget(checkEndConditionButton);
-
+                   drawRedLineButton->setEnabled(false);
+        drawBlueLineButton->setEnabled(false);
     setLayout(mainLayout);
 }
 void MainGameScreen::setButtonColor(QPushButton* button, const QColor& color)
@@ -122,6 +123,10 @@ void MainGameScreen::checkEndCondition(){
 void MainGameScreen::endTurnHandler(){
     if(game->isPaintersTurn()){
         if(edge_drawn){
+               drawRedLineButton->setEnabled(false);
+        drawBlueLineButton->setEnabled(false);
+            firstNodeSpinBox->setEnabled(true);
+            secondNodeSpinBox->setEnabled(true);
         edge_drawn = false;
         checkEndCondition();
         game->swapTurn();
@@ -131,6 +136,10 @@ void MainGameScreen::endTurnHandler(){
     if(game->isBuildersTurn()){
         //Only Swaps to painters turn if the edge is not build and if the first and second spin box are not equal
         if(!game->isEdgeBuilt(std::min(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1),std::max(firstNodeSpinBox->value()-1,secondNodeSpinBox->value()-1)) && firstNodeSpinBox->value() != secondNodeSpinBox->value()){
+                    firstNodeSpinBox->setEnabled(false);
+            secondNodeSpinBox->setEnabled(false);
+        drawRedLineButton->setEnabled(true);
+        drawBlueLineButton->setEnabled(true);
             game->swapTurn();
             playerImage->setPixmap(painterPixel);
         }
