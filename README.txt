@@ -8,7 +8,7 @@ Enjoy!
 Building and Installing the Online Ramsey Game
 ==============================================
 
-This section provides instructions for building and installing the Online Ramsey Game software using CMake. Please ensure that you have Git and CMake installed, and follow the instructions below to clone, build, and install the software.
+This section provides instructions for building and installing the Online Ramsey Game software using CMake.
 
 Step 1: Clone the Repository
 ----------------------------
